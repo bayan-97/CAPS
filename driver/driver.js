@@ -1,8 +1,9 @@
 const inquirer = require('inquirer'); 
 const net = require('net'); 
 const client = new net.Socket();
+require('dotenv').config()
 const HOST = process.env.HOST || 'localhost';
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 let name = '';
 const messages = [];
 
@@ -11,13 +12,15 @@ client.connect(PORT, HOST, () => {
   client.on('data', (data) => {
     const dataObj = JSON.parse(data);
     if (dataObj.event == 'pickup') {
-      console.log("driver",dataObj.payload)
       setTimeout(() => {
-        console.log(`DRIVER: picked up ${dataObj.payload}`);
+   
+        let idorder=dataObj.payload.orderID
+        console.log(`DRIVER: picked up ${idorder}`);
         const massege = JSON.stringify({ event:'in-transit' , payload: dataObj.payload });
         client.write(massege);
         setTimeout(() => {
-          const massege = JSON.stringify({ event:'delivered' , payload:  dataObj.payload });
+          console.log(`delivered up ${idorder}`);
+          let massege = JSON.stringify({ event:'delivered' , payload:  dataObj.payload });
           client.write(massege);
         }, 3000);
         

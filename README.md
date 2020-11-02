@@ -1,6 +1,6 @@
 # CAPS
 
-LAB - 16
+LAB - 17
 
 
 Author: bayan alalem
@@ -11,36 +11,50 @@ Setup
 
 ## detailes about files
 
-### events.js
-Global Event Pool 
-### caps.js
-1. Manages the state of every package (ready for pickup, in transit, delivered, etc)
-2. Logs every event to the console with a timestamp and the event payload
-`“EVENT {}”`
+### CAPS Application Server
+1. Creates a pool of connected clients
+Accept inbound TCP connections on a declared port
+On new connections, add the client to the connection pool
+On incoming data from a client
+2. Read and parse the incoming data/payload
+Verify that the data is legitimate
+Is it a JSON object with both an event and payload properties?
+If the payload is ok, broadcast the raw data back out to each of the other connected clients
+### Vendor Application
 
-
-### vendor.js
-
-1. Declare your store name 
-2. Every 5 seconds, simulate a new customer order
-Create a fake order, as an object:
-storeName, orderId, customerName, address
-Emit a ‘pickup’ event and attach the fake order as payload
-3.  using the faker library to make up phony information
-Monitor the system for events …
-Whenever the ‘delivered’ event occurs
-Log “thank you” to the console
-
+Use .env to set your store name
+Connect to the CAPS server
+Every 5 seconds, simulate a new customer order
+Create an order object with your store name, order id, customer name, address
+HINT: Have some fun by using the faker library to make up phony information
+Create a message object with the following keys:
+event - ‘pickup’
+payload - the order object you created in the above step
+Write that message (as a string) to the CAPS server
+Listen for the data event coming in from the CAPS server
+When data arrives, parse it (it should be JSON) and look for the event property
+If the event is called delivered
+Log “thank you for delivering id” to the console
+Ignore any data that specifies a different event
 ### driver.js
-1. Monitor the system for events …
-On the ‘pickup’ event …
-2. Wait 1 second
-Log “DRIVER: picked up [ORDER_ID]” to the console.
-Emit an ‘in-transit’ event with the payload you received
-3. Wait 3 seconds
 
-Log “delivered” to the console
-Emit a ‘delivered’ event with the same payload
+1. Connect to the CAPS server
+Listen for the data event coming in from the CAPS server
+2. When data arrives, parse it (it should be JSON) and look for the event property and begin processing…
+If the event is called pickup
+Simulate picking up the package
+3. Wait 1 second
+Log “picking up id” to the console
+Create a message object with the following keys:
+event - ‘in-transit’
+payload - the payload from the data object you just received
+4.Write that message (as a string) to the CAPS server
+Simulate delivering the package
+Wait 3 seconds
+5. Create a message object with the following keys:
+event - ‘delivered’
+payload - the payload from the data object you just received
+Write that message (as a string) to the CAPS server
 
 
 **refactores our code**
@@ -49,18 +63,9 @@ Emit a ‘delivered’ event with the same payload
 `nodemon`
 
 Returns 
+![](lab17.PNG)
 
-`{ event: 'pickup',`
- ` time: 2020-03-06T18:27:17.732Z,`
-  `payload:`
-`   { store: '1-206-flowers',`
-    ` orderID: 'e3669048-7313-427b-b6cc-74010ca1f8f0',`
-    ` customer: 'Jamal Braun',`
-    ` address: 'Schmittfort, LA' } }`
-
-
-test
 
 
 UML Diagram
-![](lab16ui.PNG)
+![](lab17ui.PNG)

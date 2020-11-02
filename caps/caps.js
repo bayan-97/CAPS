@@ -1,5 +1,7 @@
 const net = require('net');
+
 const uuidv4 = require('uuid').v4;
+require('dotenv').config()
 const PORT = process.env.PORT || 4000;
 
 const server = net.createServer();
@@ -21,7 +23,7 @@ function dispatchEvent(buffer) {
   for (let socket in socketPool) {
     socketPool[socket].write(buffer); //6
   }
-  console.log('BUFFER ', buffer);
+
   let dtobj = JSON.parse(buffer.toString().trim());
   if (dtobj.event == 'pickup') {
     log('pickup', dtobj);
